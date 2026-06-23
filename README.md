@@ -26,6 +26,27 @@ O projeto cumpre com rigor as melhores práticas de construção de APIs RESTful
 
 O ecossistema é formado por dois serviços independentes que se comunicam via protocolo HTTP (com rotinas de resiliência e fallback):
 
+```mermaid
+graph TD
+    Client(("Front-end / Postman"))
+    
+    subgraph docker["Container Docker"]
+        API_Carteira["ms-carteira<br>Porta 8000"]
+        API_Investimentos["ms-investimentos<br>Porta 8001"]
+        
+        DB_Carteira[("db_carteira<br>PostgreSQL")]
+        DB_Investimentos[("db_investimentos<br>PostgreSQL")]
+        
+        API_Carteira -->|"CRUD Transações"| DB_Carteira
+        API_Investimentos -->|"Salva Histórico"| DB_Investimentos
+        
+        API_Investimentos -.->|"GET HTTP interno<br>Busca Saldo Livre"| API_Carteira
+    end
+    
+    Client -->|"HTTP"| API_Carteira
+    Client -->|"HTTP"| API_Investimentos
+```
+
 1. **`ms-carteira` (Gestão e Custódia)**
    * Responsável por manter o fluxo de caixa do usuário.
    * **Domínios:** `Transacao` (Receitas e Despesas para cálculo de saldo) e `Ativo` (Ações/Títulos mantidos sob custódia).

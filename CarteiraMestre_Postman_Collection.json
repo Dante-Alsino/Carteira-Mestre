@@ -1,0 +1,75 @@
+{
+	"info": {
+		"_postman_id": "c1a1a5b6-7d43-4e6f-8c3e-00a456789abc",
+		"name": "Carteira Mestre SOA",
+		"description": "APIs de Gestão Financeira e Simulação de Investimentos.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. ms-carteira (Gestão)",
+			"item": [
+				{
+					"name": "1. Cadastrar Receita",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"descricao\": \"Salário Mensal\",\n  \"tipo\": \"RECEITA\",\n  \"valor\": 5000.00,\n  \"data\": \"2026-06-25\"\n}"
+						},
+						"url": {"raw": "http://localhost:8000/api/transacoes/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "transacoes", ""]}
+					}
+				},
+				{
+					"name": "2. Cadastrar Despesa",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"descricao\": \"Conta de Luz\",\n  \"tipo\": \"DESPESA\",\n  \"valor\": 200.00,\n  \"data\": \"2026-06-25\"\n}"
+						},
+						"url": {"raw": "http://localhost:8000/api/transacoes/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "transacoes", ""]}
+					}
+				},
+				{
+					"name": "3. Ver Saldo e Transações",
+					"request": {
+						"method": "GET",
+						"url": {"raw": "http://localhost:8000/api/transacoes/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "transacoes", ""]}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. ms-investimentos (Motor Analítico)",
+			"item": [
+				{
+					"name": "4. Simulação (SOA Ativo)",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"meses\": 12,\n  \"taxa_juros\": 0.01,\n  \"usar_saldo_carteira\": true\n}"
+						},
+						"url": {"raw": "http://localhost:8001/api/simulacoes/", "protocol": "http", "host": ["localhost"], "port": "8001", "path": ["api", "simulacoes", ""]}
+					}
+				},
+				{
+					"name": "5. Simulação (Fallback / Manual)",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"valor_utilizado\": 5000.00,\n  \"meses\": 12,\n  \"taxa_juros\": 0.01,\n  \"usar_saldo_carteira\": false\n}"
+						},
+						"url": {"raw": "http://localhost:8001/api/simulacoes/", "protocol": "http", "host": ["localhost"], "port": "8001", "path": ["api", "simulacoes", ""]}
+					}
+				}
+			]
+		}
+	]
+}
