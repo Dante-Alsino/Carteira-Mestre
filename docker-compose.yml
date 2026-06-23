@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: carteira_mestre_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d
+    networks:
+      - carteira_network
+
+  ms-carteira:
+    build: ./ms-carteira
+    container_name: carteira_mestre_ms_carteira
+    # O comando runserver só será efetivo na Sprint 2 após criarmos o projeto Django.
+    # Por hora, para o container não morrer, podemos deixar um comando dummy ou criar o bash de execução
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./ms-carteira:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - carteira_network
+
+  ms-investimentos:
+    build: ./ms-investimentos
+    container_name: carteira_mestre_ms_investimentos
+    command: python manage.py runserver 0.0.0.0:8001
+    volumes:
+      - ./ms-investimentos:/app
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db
+    networks:
+      - carteira_network
+
+volumes:
+  postgres_data:
+
+networks:
+  carteira_network:
+    driver: bridge
