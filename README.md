@@ -1,4 +1,4 @@
-# 📈 Carteira Mestre
+# 💼 Carteira Mestre - API de Gestão Financeira e Investimentos
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.x-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python">
@@ -8,76 +8,73 @@
   <img src="https://img.shields.io/badge/Arquitetura-SOA-FF6F00?style=for-the-badge" alt="SOA">
 </p>
 
-## 📋 Sobre o Projeto
+Bem-vindo ao repositório do **Carteira Mestre**, um ecossistema desenvolvido sob a Arquitetura Orientada a Serviços (SOA) focado no controle de fluxo de caixa pessoal e projeções de investimentos.
 
-**Carteira Mestre** é um sistema baseado em **Arquitetura Orientada a Serviços (SOA)**, desenvolvido como projeto de avaliação para a disciplina de Web Service. O objetivo da aplicação é simular um gerenciador de carteira de ativos e projeções de investimentos.
+O projeto cumpre com rigor as melhores práticas de construção de APIs RESTful, separação de responsabilidades (Camadas MVC) e interoperabilidade entre sistemas distribuídos.
 
-O projeto foi construído respeitando as mais rígidas boas práticas e diretrizes da disciplina, garantindo separação de camadas, comunicação HTTP assíncrona e conteinerização completa da infraestrutura.
+---
 
-## 🏗️ Arquitetura em Camadas e Microserviços
+## 🏗️ Arquitetura e Tecnologias
 
-A aplicação é dividida em dois **microserviços independentes**, cada um conectado a um banco lógico separado, e comunicando-se exclusivamente via protocolo HTTP.
+* **Linguagem Base:** Python 3.x
+* **Framework Backend:** Django + Django REST Framework (DRF)
+* **Banco de Dados:** PostgreSQL (Bancos Lógicos Isolados)
+* **Orquestração e Infraestrutura:** Docker & Docker Compose
+* **Arquitetura:** Microserviços (SOA)
 
-O padrão **MVC (Model-View-Controller)** natural do Django foi modificado para suportar o padrão imposto pela disciplina:
-- 🎛️ **Controller (Views/ViewSets):** Responsável por receber as requisições HTTP, lidar com códigos de status e retornar JSON. Nenhuma lógica de negócio ou consulta ao banco ocorre aqui.
-- ⚙️ **Service:** Onde vive a lógica de negócio, os cálculos de rentabilidade e a comunicação externa.
-- 🗄️ **Repository:** A interface oficial e isolada para todas as interações com o ORM (Banco de Dados).
-- 📦 **Model/DTO (Serializers):** Definições de entidades e Data Transfer Objects.
+### A Divisão dos Microserviços
 
-### 🌐 Ecossistema
+O ecossistema é formado por dois serviços independentes que se comunicam via protocolo HTTP (com rotinas de resiliência e fallback):
 
-- **`ms-carteira`**: Responsável por gerenciar os ativos do usuário (Cadastro, Edição, Remoção e Listagem).
-- **`ms-investimentos`**: Serviço responsável por rodar simulações financeiras, consumindo os dados da carteira do usuário de forma dinâmica e resiliente (com fallback para valores manuais via *query params* em caso de falha de conexão).
-- **PostgreSQL**: Instância única de banco de dados conteinerizada rodando com partições lógicas exclusivas (`db_carteira` e `db_investimentos`).
+1. **`ms-carteira` (Gestão e Custódia)**
+   * Responsável por manter o fluxo de caixa do usuário.
+   * **Domínios:** `Transacao` (Receitas e Despesas para cálculo de saldo) e `Ativo` (Ações/Títulos mantidos sob custódia).
+   * **Banco de Dados:** `db_carteira`
 
-## 🚀 Como Executar Localmente (Ambiente Docker)
+2. **`ms-investimentos` (Motor Analítico)**
+   * Responsável por calcular juros compostos e projeções futuras.
+   * **Comunicação Ativa:** O serviço consome ativamente o endpoint do `ms-carteira` para puxar o "Saldo Livre" do usuário e usá-lo como base de cálculo.
+   * **Resiliência (Fallback):** Caso o `ms-carteira` fique indisponível, o sistema não trava; ele passa a exigir um valor manual do usuário para continuar processando simulações.
+   * **Domínios:** `Simulacao` (Histórico de cálculos de rentabilidade).
+   * **Banco de Dados:** `db_investimentos`
 
-Todo o ecossistema está orquestrado via Docker Compose, permitindo uma inicialização simples com um único comando.
+---
 
-### Pré-requisitos
-- [Docker](https://www.docker.com/products/docker-desktop) instalado e rodando.
-- [Docker Compose](https://docs.docker.com/compose/install/).
+## 🚀 Como Executar o Projeto Localmente
 
-### Passo a Passo
+O ambiente de desenvolvimento está 100% conteinerizado. Você não precisa instalar Python ou PostgreSQL na sua máquina, apenas o **Docker Desktop**.
 
-1. **Clone o repositório:**
+1. Clone este repositório ou baixe a pasta do projeto.
+2. Abra o terminal na raiz do projeto (onde está o arquivo `docker-compose.yml`).
+3. Execute o comando de orquestração:
    ```bash
-   git clone https://github.com/seu-usuario/carteira-mestre.git
-   cd carteira-mestre
+   docker-compose up -d --build
    ```
 
-2. **Suba os containers:**
-   ```bash
-   docker-compose up --build
-   ```
-   > Esse comando irá compilar as imagens de ambos os microserviços, inicializar o PostgreSQL e rodar as migrações necessárias.
+O Docker construirá as imagens do Python, baixará o PostgreSQL, criará os dois bancos lógicos separadamente e iniciará as duas APIs simultaneamente.
 
-3. **Acesse as APIs:**
-   - **`ms-carteira`**: [http://localhost:8000](http://localhost:8000)
-   - **`ms-investimentos`**: [http://localhost:8001](http://localhost:8001)
+**Acesse as APIs:**
+* Microserviço de Carteira: `http://localhost:8000`
+* Microserviço de Investimentos: `http://localhost:8001`
 
-## 📌 Principais Endpoints
+---
 
-### Serviço: MS-Carteira (Porta: 8000)
-- `GET /api/ativos/` - Lista todos os ativos.
-- `POST /api/ativos/` - Cadastra um novo ativo.
-- `PUT /api/ativos/{id}/` - Atualiza um ativo existente.
-- `DELETE /api/ativos/{id}/` - Remove um ativo.
+## 📡 Endpoints Principais (CRUD)
 
-### Serviço: MS-Investimentos (Porta: 8001)
-- `GET /api/simulacao/` - Realiza a simulação de investimento comunicando-se com o `ms-carteira`.
-  * *Fallback Resiliente:* Caso o `ms-carteira` esteja indisponível, o sistema fará um fallback com base em Query Params: `GET /api/simulacao/?valor_manual=5000`
+Todas as requisições e respostas são trafegadas em formato **JSON** rígido, respeitando os Status Codes HTTP convencionais (`200 OK`, `201 Created`, `400 Bad Request`, `404 Not Found`).
 
-> 💡 **Nota:** Todos os retornos da API estão obrigatoriamente padronizados no formato **JSON**, utilizando os *Status Codes* adequados do HTTP (200 OK, 201 Created, 400 Bad Request, 404 Not Found, etc).
+### ms-carteira (Porta 8000)
+* `GET /api/transacoes/` - Lista todas as receitas e despesas e devolve o cálculo dinâmico do **Saldo Total**.
+* `POST /api/transacoes/` - Cadastra uma nova transação.
+* `PUT /api/transacoes/{id}/` - Edita uma transação existente.
+* `DELETE /api/transacoes/{id}/` - Remove uma transação.
+* `GET /api/ativos/` - Lista os ativos em custódia.
+*(Idem POST, PUT, DELETE para ativos).*
 
-## ✅ Critérios de Avaliação Atendidos
+### ms-investimentos (Porta 8001)
+* `GET /api/simulacoes/` - Retorna o histórico de simulações realizadas.
+* `POST /api/simulacoes/` - Realiza o cálculo de juros. Aceita a flag `usar_saldo_carteira: true` para puxar os dados via rede interna, ou o preenchimento de `valor_manual` em caso de falha de rede (resiliência).
 
-O projeto atende a todos os requisitos solicitados:
-- [x] API REST com pelo menos 4 verbos implementados.
-- [x] Arquitetura rigorosamente separada em camadas (Controller, Service, Repository, Model).
-- [x] O protocolo HTTP é respeitado com JSON válido em todos os retornos e Status Codes condizentes.
-- [x] Orquestração e fácil inicialização via ambiente local Dockerizado.
-- [x] **Bônus Conquistado (+10pts):** Implementação e orquestração de **2 Microserviços**.
+---
 
-## 🛠️ Demonstração e Testes
-As rotas de teste podem ser importadas para ferramentas como **Postman** ou **Insomnia**. 
+*Projeto desenvolvido como Trabalho Final da Disciplina de Web Services / Arquitetura de Software.*
