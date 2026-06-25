@@ -4,9 +4,8 @@ services:
   db:
     image: postgres:15-alpine
     container_name: carteira_mestre_db
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+    env_file:
+      - .env
     ports:
       - "5432:5432"
     volumes:
@@ -18,6 +17,8 @@ services:
   ms-carteira:
     build: ./ms-carteira
     container_name: carteira_mestre_ms_carteira
+    env_file:
+      - .env
     # O comando runserver só será efetivo na Sprint 2 após criarmos o projeto Django.
     # Por hora, para o container não morrer, podemos deixar um comando dummy ou criar o bash de execução
     command: python manage.py runserver 0.0.0.0:8000
@@ -33,6 +34,8 @@ services:
   ms-investimentos:
     build: ./ms-investimentos
     container_name: carteira_mestre_ms_investimentos
+    env_file:
+      - .env
     command: python manage.py runserver 0.0.0.0:8001
     volumes:
       - ./ms-investimentos:/app
