@@ -39,6 +39,25 @@
 						"method": "GET",
 						"url": {"raw": "http://localhost:8000/api/transacoes/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "transacoes", ""]}
 					}
+				},
+				{
+					"name": "4. Cadastrar Ativo (Custódia)",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ticker\": \"PETR4\",\n  \"quantidade\": 100,\n  \"preco_medio\": 35.50,\n  \"data_aquisicao\": \"2026-06-25\"\n}"
+						},
+						"url": {"raw": "http://localhost:8000/api/ativos/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "ativos", ""]}
+					}
+				},
+				{
+					"name": "5. Listar Ativos (Custódia)",
+					"request": {
+						"method": "GET",
+						"url": {"raw": "http://localhost:8000/api/ativos/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "ativos", ""]}
+					}
 				}
 			]
 		},
@@ -46,7 +65,7 @@
 			"name": "2. ms-investimentos (Motor Analítico)",
 			"item": [
 				{
-					"name": "4. Simulação (SOA Ativo)",
+					"name": "6. Simulação (SOA Ativo)",
 					"request": {
 						"method": "POST",
 						"header": [{"key": "Content-Type", "value": "application/json"}],
@@ -58,7 +77,7 @@
 					}
 				},
 				{
-					"name": "5. Simulação (Fallback / Manual)",
+					"name": "7. Simulação (Fallback / Manual)",
 					"request": {
 						"method": "POST",
 						"header": [{"key": "Content-Type", "value": "application/json"}],
