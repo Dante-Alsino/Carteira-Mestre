@@ -25,6 +25,23 @@ class Api {
         return await res.json();
     }
 
+    // Atualiza transação existente
+    static async updateTransacao(id, data) {
+        const res = await fetch(`${API_CARTEIRA}/transacoes/${id}/`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error('Erro ao atualizar transação');
+        return await res.json();
+    }
+
+    // Exclui transação
+    static async deleteTransacao(id) {
+        const res = await fetch(`${API_CARTEIRA}/transacoes/${id}/`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Erro ao excluir transação');
+    }
+
     // Busca lista de ativos
     static async getAtivos() {
         try {
@@ -46,6 +63,23 @@ class Api {
         });
         if (!res.ok) throw new Error('Erro ao salvar ativo');
         return await res.json();
+    }
+
+    // Atualiza ativo existente
+    static async updateAtivo(id, data) {
+        const res = await fetch(`${API_CARTEIRA}/ativos/${id}/`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error('Erro ao atualizar ativo');
+        return await res.json();
+    }
+
+    // Exclui ativo
+    static async deleteAtivo(id) {
+        const res = await fetch(`${API_CARTEIRA}/ativos/${id}/`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Erro ao excluir ativo');
     }
 
     // Aciona a Inteligência SOA do Motor Analítico

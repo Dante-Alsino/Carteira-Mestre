@@ -61,6 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const formTransacao = document.getElementById('form-transacao');
     const saldoTotalEl = document.getElementById('saldo-total');
     const tabelaTbody = document.querySelector('#tabela-transacoes tbody');
+    const btnSubmitTransacao = document.getElementById('btn-submit-transacao');
+    const btnCancelTransacao = document.getElementById('btn-cancelar-transacao');
+    let editandoTransacaoId = null;
 
     // Função para formatar moeda BRL
     const formatBRL = (valor) => {
@@ -90,12 +93,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${t.descricao}</td>
                 <td class="${classeCor}">${t.tipo}</td>
                 <td class="${classeCor}">${formatBRL(t.valor)}</td>
+                <td>
+                    <button class="btn-sm" onclick="prepararEdicaoTransacao(${t.id}, '${t.descricao}', '${t.tipo}', ${t.valor}, '${t.data}')">Editar</button>
+                    <button class="btn-sm" onclick="excluirTransacao(${t.id})">Excluir</button>
+                </td>
             `;
             tabelaTbody.appendChild(tr);
         });
     }
 
-    // Dispara Cadastro de Transação
+    // Ações na Tabela Transações
+    window.prepararEdicaoTransacao = (id, descricao, tipo, valor, data) => {
+        editandoTransacaoId = id;
+        document.getElementById('t-descricao').value = descricao;
+        document.getElementById('t-tipo').value = tipo;
+        document.getElementById('t-valor').value = valor;
+        document.getElementById('t-data').value = data;
+        
+        btnSubmitTransacao.innerText = 'Salvar Edição';
+        btnCancelTransacao.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.excluirTransacao = async (id) => {
+        if(confirm('Tem certeza que deseja excluir esta transação?')) {
+            try {
+                await Api.deleteTransacao(id);
+                carregarDashboard();
+            } catch(e) { alert(e.message); }
+        }
+    };
+
+    btnCancelTransacao.addEventListener('click', () => {
+        editandoTransacaoId = null;
+        formTransacao.reset();
+        btnSubmitTransacao.innerText = 'Cadastrar';
+        btnCancelTransacao.style.display = 'none';
+    });
+
+    // Dispara Cadastro / Edição de Transação
     formTransacao.addEventListener('submit', async (e) => {
         e.preventDefault();
         const payload = {
@@ -106,7 +142,14 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            await Api.addTransacao(payload);
+            if (editandoTransacaoId) {
+                await Api.updateTransacao(editandoTransacaoId, payload);
+                editandoTransacaoId = null;
+                btnSubmitTransacao.innerText = 'Cadastrar';
+                btnCancelTransacao.style.display = 'none';
+            } else {
+                await Api.addTransacao(payload);
+            }
             formTransacao.reset();
             carregarDashboard(); // Refresh dinâmico
         } catch (error) {
@@ -119,6 +162,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     const formAtivo = document.getElementById('form-ativo');
     const tabelaAtivosTbody = document.querySelector('#tabela-ativos tbody');
+    const btnSubmitAtivo = document.getElementById('btn-submit-ativo');
+    const btnCancelAtivo = document.getElementById('btn-cancelar-ativo');
+    let editandoAtivoId = null;
 
     async function carregarAtivos() {
         const ativos = await Api.getAtivos();
@@ -139,8 +185,43 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${a.quantidade}</td>
                 <td>${formatBRL(a.preco_medio)}</td>
                 <td class="text-success">${formatBRL(totalInvestido)}</td>
+                <td>
+                    <button class="btn-sm" onclick="prepararEdicaoAtivo(${a.id}, '${a.ticker}', ${a.quantidade}, ${a.preco_medio}, '${a.data_aquisicao}')">Editar</button>
+                    <button class="btn-sm" onclick="excluirAtivo(${a.id})">Excluir</button>
+                </td>
             `;
             tabelaAtivosTbody.appendChild(tr);
+        });
+    }
+
+    // Ações na Tabela Ativos
+    window.prepararEdicaoAtivo = (id, ticker, quantidade, preco_medio, data) => {
+        editandoAtivoId = id;
+        document.getElementById('a-ticker').value = ticker;
+        document.getElementById('a-quantidade').value = quantidade;
+        document.getElementById('a-preco').value = preco_medio;
+        document.getElementById('a-data').value = data;
+        
+        btnSubmitAtivo.innerText = 'Salvar Edição';
+        btnCancelAtivo.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    window.excluirAtivo = async (id) => {
+        if(confirm('Tem certeza que deseja excluir esta ação da sua custódia?')) {
+            try {
+                await Api.deleteAtivo(id);
+                carregarAtivos();
+            } catch(e) { alert(e.message); }
+        }
+    };
+
+    if(btnCancelAtivo) {
+        btnCancelAtivo.addEventListener('click', () => {
+            editandoAtivoId = null;
+            formAtivo.reset();
+            btnSubmitAtivo.innerText = 'Adicionar Ativo';
+            btnCancelAtivo.style.display = 'none';
         });
     }
 
@@ -155,7 +236,14 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                await Api.addAtivo(payload);
+                if(editandoAtivoId) {
+                    await Api.updateAtivo(editandoAtivoId, payload);
+                    editandoAtivoId = null;
+                    btnSubmitAtivo.innerText = 'Adicionar Ativo';
+                    btnCancelAtivo.style.display = 'none';
+                } else {
+                    await Api.addAtivo(payload);
+                }
                 formAtivo.reset();
                 carregarAtivos(); // Refresh dinâmico
             } catch (error) {

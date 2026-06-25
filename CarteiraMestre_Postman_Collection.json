@@ -7,10 +7,17 @@
 	},
 	"item": [
 		{
-			"name": "1. ms-carteira (Gestão)",
+			"name": "1. Fluxo de Caixa (Transações)",
 			"item": [
 				{
-					"name": "1. Cadastrar Receita",
+					"name": "1. Ver Saldo e Transações (GET)",
+					"request": {
+						"method": "GET",
+						"url": {"raw": "http://localhost:8000/api/transacoes/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "transacoes", ""]}
+					}
+				},
+				{
+					"name": "2. Cadastrar Receita (POST)",
 					"request": {
 						"method": "POST",
 						"header": [{"key": "Content-Type", "value": "application/json"}],
@@ -22,7 +29,7 @@
 					}
 				},
 				{
-					"name": "2. Cadastrar Despesa",
+					"name": "3. Cadastrar Despesa (POST)",
 					"request": {
 						"method": "POST",
 						"header": [{"key": "Content-Type", "value": "application/json"}],
@@ -33,15 +40,39 @@
 						"url": {"raw": "http://localhost:8000/api/transacoes/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "transacoes", ""]}
 					}
 				},
-				{
-					"name": "3. Ver Saldo e Transações",
+                {
+					"name": "4. Atualizar Transação (PUT)",
 					"request": {
-						"method": "GET",
-						"url": {"raw": "http://localhost:8000/api/transacoes/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "transacoes", ""]}
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"descricao\": \"Salário Reajustado\",\n  \"tipo\": \"RECEITA\",\n  \"valor\": 6500.00,\n  \"data\": \"2026-06-25\"\n}"
+						},
+						"url": {"raw": "http://localhost:8000/api/transacoes/1/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "transacoes", "1", ""]}
 					}
 				},
+                {
+					"name": "5. Deletar Transação (DELETE)",
+					"request": {
+						"method": "DELETE",
+						"url": {"raw": "http://localhost:8000/api/transacoes/1/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "transacoes", "1", ""]}
+					}
+				}
+			]
+		},
+        {
+			"name": "2. Custódia (Ativos)",
+			"item": [
 				{
-					"name": "4. Cadastrar Ativo (Custódia)",
+					"name": "1. Listar Ativos (GET)",
+					"request": {
+						"method": "GET",
+						"url": {"raw": "http://localhost:8000/api/ativos/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "ativos", ""]}
+					}
+				},
+                {
+					"name": "2. Cadastrar Ativo (POST)",
 					"request": {
 						"method": "POST",
 						"header": [{"key": "Content-Type", "value": "application/json"}],
@@ -52,20 +83,39 @@
 						"url": {"raw": "http://localhost:8000/api/ativos/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "ativos", ""]}
 					}
 				},
-				{
-					"name": "5. Listar Ativos (Custódia)",
+                {
+					"name": "3. Atualizar Ativo (PUT)",
 					"request": {
-						"method": "GET",
-						"url": {"raw": "http://localhost:8000/api/ativos/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "ativos", ""]}
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ticker\": \"PETR4\",\n  \"quantidade\": 150,\n  \"preco_medio\": 36.00,\n  \"data_aquisicao\": \"2026-06-25\"\n}"
+						},
+						"url": {"raw": "http://localhost:8000/api/ativos/1/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "ativos", "1", ""]}
+					}
+				},
+                {
+					"name": "4. Deletar Ativo (DELETE)",
+					"request": {
+						"method": "DELETE",
+						"url": {"raw": "http://localhost:8000/api/ativos/1/", "protocol": "http", "host": ["localhost"], "port": "8000", "path": ["api", "ativos", "1", ""]}
 					}
 				}
 			]
 		},
 		{
-			"name": "2. ms-investimentos (Motor Analítico)",
+			"name": "3. ms-investimentos (Motor Analítico)",
 			"item": [
+                {
+					"name": "1. Ver Histórico Simulações (GET)",
+					"request": {
+						"method": "GET",
+						"url": {"raw": "http://localhost:8001/api/simulacoes/", "protocol": "http", "host": ["localhost"], "port": "8001", "path": ["api", "simulacoes", ""]}
+					}
+				},
 				{
-					"name": "6. Simulação (SOA Ativo)",
+					"name": "2. Simulação Automática (SOA / POST)",
 					"request": {
 						"method": "POST",
 						"header": [{"key": "Content-Type", "value": "application/json"}],
@@ -77,7 +127,7 @@
 					}
 				},
 				{
-					"name": "7. Simulação (Fallback / Manual)",
+					"name": "3. Simulação Manual (Fallback / POST)",
 					"request": {
 						"method": "POST",
 						"header": [{"key": "Content-Type", "value": "application/json"}],
@@ -86,6 +136,13 @@
 							"raw": "{\n  \"valor_utilizado\": 5000.00,\n  \"meses\": 12,\n  \"taxa_juros\": 0.01,\n  \"usar_saldo_carteira\": false\n}"
 						},
 						"url": {"raw": "http://localhost:8001/api/simulacoes/", "protocol": "http", "host": ["localhost"], "port": "8001", "path": ["api", "simulacoes", ""]}
+					}
+				},
+                {
+					"name": "4. Apagar Histórico (DELETE)",
+					"request": {
+						"method": "DELETE",
+						"url": {"raw": "http://localhost:8001/api/simulacoes/1/", "protocol": "http", "host": ["localhost"], "port": "8001", "path": ["api", "simulacoes", "1", ""]}
 					}
 				}
 			]

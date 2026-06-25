@@ -16,7 +16,7 @@
     
     <nav class="navbar glass">
         <div class="logo">
-            <span class="icon">💼</span> Carteira Mestre
+            <span class="icon">▪</span> Carteira Mestre
         </div>
         <div class="nav-links">
             <button class="nav-btn active" id="btn-tab-dashboard">Fluxo de Caixa</button>
@@ -59,7 +59,8 @@
                         <div class="input-group">
                             <input type="date" id="t-data" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Cadastrar</button>
+                        <button type="submit" id="btn-submit-transacao" class="btn btn-primary">Cadastrar</button>
+                        <button type="button" id="btn-cancelar-transacao" class="btn btn-secondary" style="display: none;">Cancelar Edição</button>
                     </form>
                 </div>
                 
@@ -74,6 +75,7 @@
                                     <th>Descrição</th>
                                     <th>Tipo</th>
                                     <th>Valor</th>
+                                    
                                 </tr>
                             </thead>
                             <tbody>
@@ -107,7 +109,8 @@
                             <label>Data de Aquisição</label>
                             <input type="date" id="a-data" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Adicionar Ativo</button>
+                        <button type="submit" id="btn-submit-ativo" class="btn btn-primary">Adicionar Ativo</button>
+                        <button type="button" id="btn-cancelar-ativo" class="btn btn-secondary" style="display: none;">Cancelar Edição</button>
                     </form>
                 </div>
                 
@@ -123,6 +126,7 @@
                                     <th>Qtd</th>
                                     <th>Preço Médio</th>
                                     <th>Total Investido</th>
+                                    
                                 </tr>
                             </thead>
                             <tbody>
