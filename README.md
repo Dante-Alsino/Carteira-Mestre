@@ -41,21 +41,49 @@ graph TD
 
 ---
 
-## Como Executar o Projeto Localmente
+## 🚀 Como Executar o Projeto Localmente
 
-Não há necessidade de instalar Python ou Postgres localmente, apenas o **Docker Desktop**. O projeto utiliza variáveis de ambiente de um `.env` por boas práticas.
+Não há necessidade de instalar Python ou Postgres localmente, apenas o **Docker Desktop**. O projeto aplica o padrão ouro de segurança, isolando senhas e chaves secretas através de variáveis de ambiente.
 
 1. Clone o repositório.
-2. Crie ou verifique a existência do arquivo `.env` na raiz.
-3. Execute o comando orquestrador:
+2. **Configure as Variáveis de Ambiente (`.env`):**
+   Na raiz do projeto (na mesma pasta do arquivo `docker-compose.yml`), crie um arquivo chamado exatamente `.env` e cole as seguintes credenciais:
+   ```env
+   # Credenciais do Banco de Dados PostgreSQL
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=postgres
+   POSTGRES_HOST=db
+   POSTGRES_PORT=5432
+
+   # Bancos Lógicos Independentes (Microserviços)
+   DB_NAME_CARTEIRA=db_carteira
+   DB_NAME_INVESTIMENTOS=db_investimentos
+
+   # Chaves de Segurança do Django
+   SECRET_KEY=cole_aqui_uma_chave_secreta_segura
+   ```
+   *(Dica: Para gerar uma chave secreta forte e criptograficamente segura padrão do Django, você pode rodar o comando abaixo no terminal e colar o resultado ali no `.env`):*
+   `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"`
+
+   > **Nota de Arquitetura Limpa:** Nenhuma senha ou *Secret Key* foi inserida diretamente (hardcoded) no `settings.py` ou no `docker-compose.yml`. Tudo é lido dinamicamente deste arquivo `.env`.
+
+3. Execute o comando orquestrador para construir e iniciar o ecossistema:
    ```bash
    docker-compose up -d --build
    ```
-4. Para acessar a **Interface Web (Front-end)**, basta abrir o arquivo `frontend-carteira/index.html` no seu navegador Chrome/Edge.
+
+4. **Aplique as Migrations (Criação das Tabelas):**
+   Como a nossa arquitetura usa bancos de dados isolados, você deve rodar a migration para os dois microserviços de forma independente:
+   ```bash
+   docker-compose exec ms-carteira python manage.py migrate
+   docker-compose exec ms-investimentos python manage.py migrate
+   ```
+
+5. Para acessar a **Interface Web (Front-end)**, basta abrir o arquivo `frontend-carteira/index.html` no seu navegador Chrome/Edge/Safari.
 
 ---
 
-## Endpoints (Guia de Integração e Testes)
+## Endpoints
 
 Utilize a *Postman Collection* incluída neste repositório (`CarteiraMestre_Postman_Collection.json`) para testar todos os verbos e cargas (payloads) instantaneamente.
 
@@ -78,7 +106,7 @@ Utilize a *Postman Collection* incluída neste repositório (`CarteiraMestre_Pos
 
 ### ms-investimentos (Porta 8001)
 
-**3. Simulador (O Coração Matemático)**
+**3. Simulador **
 - `GET /api/simulacoes/`: Retorna o histórico de todas as projeções feitas.
 - `POST /api/simulacoes/`: Endpoint inteligente. Aciona a inteligência SOA para processamento de juros compostos.
   - **Caminho Feliz (Comunicação SOA Ligada):**
